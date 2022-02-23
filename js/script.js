@@ -1,12 +1,7 @@
+`use strict`;
 let player = 0;
 let computer = 0;
-
-const playerPlay = function () {
-  const playerSelected = prompt("Rock, Paper, or Scissors").toLowerCase(); //get player's choice
-  //remove the first letter to convert to uppercase and add to the remaining letters to ensure non-case sensitivity
-  const remainingLetters = playerSelected.slice(1);
-  return playerSelected.charAt(0).toUpperCase() + remainingLetters;
-};
+let winner;
 
 const chooseableOptions = ["Rock", "Paper", "Scissors"];
 const computerPlay = function () {
@@ -16,12 +11,9 @@ const computerPlay = function () {
 };
 
 const playRound = function (playerSelection, computerSelection) {
-  console.log(
-    `Computer chose ${computerSelection} and You chose ${playerSelection}`
-  );
   if (playerSelection === computerSelection) {
-    player += 1;
-    computer += 1;
+    player += 0;
+    computer += 0;
     return "It's a tie";
   } else if (
     (playerSelection === "Scissors" && computerSelection === "Paper") ||
@@ -38,30 +30,74 @@ const playRound = function (playerSelection, computerSelection) {
     computer += 1;
     return "Computer Wins! You lose";
   } else {
-    return "wrong words";
+    return "Error";
   }
 };
 
 const game = function () {
-  for (let i = 0; i < 5; i++) {
-    const playerSelection = playerPlay();
-    const computerSelection = computerPlay();
-    console.log(playRound(playerSelection, computerSelection));
-  }
-  switch (true) {
-    case player > computer:
-      console.log(
-        `You won the game with a score of ${player} while computer lost with a score of ${computer}`
-      );
-      break;
-    case computer > player:
-      console.log(
-        `Computer won the game with a score of ${computer} while you lost with a score of ${player}`
-      );
-      break;
-    default:
-      console.log("It is a tied game");
+  if (player > computer) {
+    return "You won";
+  } else {
+    return `You Lost`;
   }
 };
 
-game();
+//
+const playerScoreDisplay = document.querySelector(".player-score");
+const computerScoreDisplay = document.querySelector(".computer-score");
+const text = document.querySelector(".text h5");
+const div = document.querySelector(".results");
+const currentGameWinner = document.querySelector(".finalWinner");
+const currentChampion = document.querySelector(".currentWinner");
+const modal = document.querySelector(".modal");
+const overlay = document.querySelector(".overlay");
+const playAgain = document.querySelector(".play-again");
+const instruction = document.querySelector(".text p");
+const playerImage = document.querySelector(".player-choice-image");
+const computerImage = document.querySelector(".computer-choice-image");
+
+const displayEndGameModal = function () {
+  if (player === 5 || computer === 5) {
+    currentGameWinner.textContent = game();
+    modal.classList.toggle("hide");
+    overlay.classList.toggle("hide");
+  }
+};
+
+const buttons = document.querySelector(".buttons");
+buttons.addEventListener("click", function (e) {
+  if (!e.target.classList.contains("btn")) return;
+  displayEndGameModal();
+  const playerSelection = e.target.dataset.name;
+  const computerSelection = computerPlay();
+  const playGame = playRound(playerSelection, computerSelection);
+  playerScoreDisplay.textContent = `${player}`;
+  computerScoreDisplay.textContent = `${computer}`;
+  text.textContent = playGame;
+  instruction.textContent = "";
+  playerImage.setAttribute(
+    "src",
+    `./images/${playerSelection.toLowerCase()}.png`
+  );
+  computerImage.setAttribute(
+    "src",
+    `./images/${computerSelection.toLowerCase()}.png`
+  );
+});
+
+playAgain.addEventListener("click", function () {
+  player = 0;
+  computer = 0;
+  modal.classList.toggle("hide");
+  overlay.classList.toggle("hide");
+  playerScoreDisplay.textContent = 0;
+  computerScoreDisplay.textContent = 0;
+  text.textContent = "CHOOSE YOUR WEAPON";
+  // playersChoices.textContent = "";
+  instruction.textContent = "The first person to score 5 wins";
+  playerImage.setAttribute("src", `./images/question-mark.png`);
+  computerImage.setAttribute("src", `./images/question-mark.png`);
+});
+
+// playerImage.setAttribute("src", "./images/hand.png");
+// computerImage.setAttribute("src", "./images/scissor.png");
